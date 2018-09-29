@@ -14,7 +14,7 @@ deploy:
   - provider: releases
     api_key:
       secure: m+2ldXYPDQ7meYQr15IsVdktAc4WTS2tMAJOUGfD77tD54D5Hp2cw0NMyenpYYuDoJXEnZcpYUOKjJZWKh3vC8eOpiDFdlFjuxTNmXku4dDxInaglHyi+TCJeP3wOXix9ld9XCxjNh7A9ET5tEaD58ztc14iK18acJ07MDHJYC2JKjEh2xs6hVW+T6XxX7maenMCYp4yKhMPBUFkqlHK7PB7GoPIBAU86NOcplDUgAg9T0EFyIKmoViUFobjDPBEuVixV7UPZ565HlKj3HCp/eKz4mZXtGjl1rGw07JZ/0F7iB17I99LVRPtPWtRCunpsc4KE0deThU+H9azxxpnl/y/UMxBirET1SjRofp1rWC/RVwY13PzIuVJrNsWZDPQUaMh1jKPmu5j1ZKp+5NSrLndHn15gSlaC4SUeKsG3C1MksKyj+vubNeSPP7PKHRul+sfjE6QgY9b7EbLHUNM7kmQrT1PcKZYmCjyVL3jwK3z4KqhSYEKxaqkJ2dM0JNlPPUEf6qEhDtvaqYSXXtSlLG2rtS0nCsp8DF+nuHCLC56vIQEOFdRvW0h6DJOY8vUln1lKnnnN4EzT1J8laxceEq1tvtw/HDE0JKTACG5nR3S700ZUqHNDvlQwwq9L36zDwX0hogHbYPSt1IGPBtCjnEem5fzySugNI/huj6kxqg=
-    file: dist/*.whl
+    file: "dist/*.whl"
     file_glob: true
     on:
-      repo: Miterion/dfnclient
+      tags: true
