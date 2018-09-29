@@ -5,7 +5,8 @@ from hashlib import sha1
 from base64 import b64decode
 
 
-def submit_request(req, fqdn, altnames, profile, pin, applicant, mail, unit, **kwargs):
+def submit_request(req, fqdn, altnames, profile, pin, applicant, mail, unit,
+                   **kwargs):
     pin_hashed = sha1(str(pin).encode()).hexdigest()
     cl = Client(
         'https://pki.pca.dfn.de/dfn-ca-global-g2/cgi-bin/pub/soap?wsdl=1')
@@ -23,9 +24,6 @@ def submit_request(req, fqdn, altnames, profile, pin, applicant, mail, unit, **k
         Publish=True,  # publish cert
     )
     pdf = cl.service.getRequestPrintout(
-        RaID=3810,
-        Serial=req_number,
-        Format='application/pdf',
-        Pin=pin_hashed)
+        RaID=3810, Serial=req_number, Format='application/pdf', Pin=pin_hashed)
     with open('{}.pdf'.format(fqdn), 'wb') as f:
         f.write(b64decode(pdf))
