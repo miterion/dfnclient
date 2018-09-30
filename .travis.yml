@@ -6,14 +6,16 @@ script: python setup.py bdist_wheel
 deploy:
   - provider: pypi
     user: miterion
+    distributions: "sdist bdist_wheel"
+    skip_cleanup: true
     on:
       tags: true
     skip_cleanup: true
     password:
       secure: clraIbEEem2AKWRkRBHtUqTRaNeIb9RJDvGmlyAzSc07Dq+BArEh7aDimY41RpR5vF/jSiaQyt600NEeuySPE04qKCeSUc4+GukO6DDknosJoU3xx5PRM1A+UvVUrrNPJnZrrKKGdy4onJ7YzO11x/9k9jqVIwiWRQuiGkXPV/GTrDAN8fx/7EDNNmMkE0PfFfSoQUw/XFEuC3ilXne+wctpYVkYWf6ibpIAuufGcLbauOdSjraROdllEWYTw0brSgMaffEtOVFgyHHsiKS4AzLDFgDPF3Ns2lhu4UFPkHu+uHYWyRKMtLIiovZ09dFOoTyYtnEAkFJy+N+Yk6Od/RBTiwxIrvzu7LPPC3bXO70lxnBjly7P6jBb2/7QxoQvu2kYyd9dnpUDDKi8R9wvJrrcfhZuok+pBxKGlofcnxuvSm2ItjI7LykpNVWwZi7Aj+iAF5zWh0163WGZvxQ/Apv/16NvRlbZmEUsAks6XZ2pd0zRXTgNSNewOQfbDzYjRbhVFc/DaWsHbqKLitAHac1n8O7gWVqhT3S8TYOi9uoB6qtemoebXBu3ojWFYv1WPZNdMij8m0GJQQ4H8B5KA4ThJheusSuOEZF4KiQ67jlJZ4RESWaIXpEgZTjU/JLYb3Z3/HZ5kr/e92R1/48lzYs5vH0R406xfVnBBlRuH+o=
   - provider: releases
-    file: dist/*
     file_glob: true
+    file: dist/*
     on:
       tags: true
     api_key:
