@@ -1,4 +1,5 @@
 import json
+from os.path import expanduser
 
 import click
 from termcolor import colored, cprint
@@ -31,10 +32,10 @@ def cli():
 @click.option(
     '-c',
     '--config',
-    type=click.File(),
+    type=click.File('r'),
     help='Path to config',
     show_default=True,
-    default='~/.config/dfn-config.json',
+    default=expanduser('~/.config/dfn-config.json'),
 )
 def create_cert(fqdn, pin, applicant, config):
     print('Using config: ', colored('{}'.format(config), 'blue'))
@@ -79,10 +80,10 @@ def create_cert(fqdn, pin, applicant, config):
 @click.option(
     '-c',
     '--config',
-    type=click.File(),
+    type=click.File('r'),
     help='Path to config',
     show_default=True,
-    default='~/.config/dfn-config.json',
+    default=expanduser('~/.config/dfn-config.json'),
 )
 def gen_existing(fqdn, pin, applicant, config, path):
     print('Using config: ', colored('{}'.format(config), 'blue'))
