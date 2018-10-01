@@ -52,7 +52,7 @@ def create_cert(fqdn, pin, applicant, config):
         cprint('{}: {}'.format(key, value), 'yellow')
     click.confirm('Are these values correct?', default=True, abort=True)
     print('Generating certificate')
-    req = openssl.gen_csr_with_new_cert(conf['fqdn'], conf['subject'])
+    req = openssl.gen_csr_with_new_cert(conf['fqdn'], conf['subject'], conf['password'])
     conf['pin'] = pin
     conf['altnames'] = [fqdn]
     conf['profile'] = 'Web Server'
@@ -101,7 +101,7 @@ def gen_existing(fqdn, pin, applicant, config, path):
     click.confirm('Are these values correct?', default=True, abort=True)
     print('Generating certificate signing request')
     req = openssl.gen_csr_with_existing_cert(path, conf['fqdn'],
-                                             conf['subject'])
+                                             conf['subject'], conf['password'])
     conf['pin'] = pin
     conf['altnames'] = [fqdn]
     conf['profile'] = 'Web Server'
@@ -111,11 +111,12 @@ def gen_existing(fqdn, pin, applicant, config, path):
 
 @cli.command('generate_config', help='Prints an example config')
 def create_config():
-    print("""{ 
+    print("""{
     "applicant": "John Doe",
     "mail": "john.doe@stud.example.com",
     "unit": "Department of Computer Science",
-    "subject": "/C=DE/ST=Hessen/L=Darmstadt/O=TU/CN={fqdn}"
+    "subject": "/C=DE/ST=Hessen/L=Darmstadt/O=TU/CN={fqdn}",
+    "password": false
 }
     """)
 

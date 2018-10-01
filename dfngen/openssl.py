@@ -4,14 +4,15 @@ from sys import exit
 from termcolor import cprint
 
 
-def gen_csr_with_new_cert(fqdn, subject):
+def gen_csr_with_new_cert(fqdn, subject, password):
+    command = [
+        'openssl', 'req', '-newkey', 'rsa:4096', '-keyout',
+        '{}.key'.format(fqdn), '-out', '{}.req'.format(fqdn), '-subj', subject
+    ]
+    if not password:
+        command.append('-nodes')
     try:
-        run([
-            'openssl', 'req', '-newkey', 'rsa:4096', '-keyout',
-            '{}.key'.format(fqdn), '-out', '{}.req'.format(fqdn), '-subj',
-            subject
-        ],
-            check=True)
+        run(command, check=True)
     except CalledProcessError:
         cprint('There was an error in openssl, please check the output', 'red')
         exit(1)
