@@ -21,7 +21,7 @@ def cli():
     prompt=True,
     hide_input=True,
     confirmation_prompt=True,
-    type=int,
+    type=str,
     help='Applicant code pin, will be prompted if not provided')
 @click.option(
     '--applicant',
@@ -74,7 +74,7 @@ def create_cert(fqdn, pin, applicant, config):
     prompt=True,
     hide_input=True,
     confirmation_prompt=True,
-    type=int,
+    type=str,
     help='Applicant code pin, will be prompted if not provided')
 @click.option(
     '-c',
