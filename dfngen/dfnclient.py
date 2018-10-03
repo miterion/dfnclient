@@ -53,7 +53,8 @@ def create_cert(fqdn, pin, applicant, config):
         cprint('{}: {}'.format(key, value), 'yellow')
     click.confirm('Are these values correct?', default=True, abort=True)
     print('Generating certificate')
-    req = openssl.gen_csr_with_new_cert(conf['fqdn'], conf['subject'], conf['password'])
+    req = openssl.gen_csr_with_new_cert(conf['fqdn'], conf['subject'],
+                                        conf['password'])
     conf['pin'] = pin
     conf['altnames'] = [fqdn]
     conf['profile'] = 'Web Server'
