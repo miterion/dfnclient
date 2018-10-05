@@ -6,14 +6,18 @@ from base64 import b64decode
 
 
 def submit_request(req, fqdn, altnames, profile, pin, applicant, mail, unit,
-                   **kwargs):
+                   raid, testserver, **kwargs):
     pin_hashed = sha1(str(pin).encode()).hexdigest()
-    cl = Client(
-        'https://pki.pca.dfn.de/dfn-ca-global-g2/cgi-bin/pub/soap?wsdl=1')
+    if testserver:
+        cl = Client(
+            'https://pki.pca.dfn.de/test-eins-ca/cgi-bin/pub/soap?wsdl=1')
+    else:
+        cl = Client(
+            'https://pki.pca.dfn.de/dfn-ca-global-g2/cgi-bin/pub/soap?wsdl=1')
     alt_type = cl.factory.create('ArrayOfString')
     alt_type._arrayType = "ns0:string[1]"
     req_number = cl.service.newRequest(
-        RaID=3810,
+        RaID=raid,
         PKCS10=req,  # Certificate Signing Request
         AltNames=alt_type,  # Altnames
         Role=profile,

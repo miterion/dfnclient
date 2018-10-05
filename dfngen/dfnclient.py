@@ -1,5 +1,6 @@
 import json
 from os.path import expanduser
+from sys import exit
 
 import click
 from termcolor import colored, cprint
@@ -7,6 +8,16 @@ from termcolor import colored, cprint
 from dfngen import openssl, soap
 
 CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+
+CONFIG = {
+    "applicant": "John Doe",
+    "mail": "john.doe@stud.example.com",
+    "unit": "Department of Computer Science",
+    "subject": "/C=DE/ST=Bundesland/L=Stadt/O=Testinstallation Eins CA/CN={fqdn}",
+    "password": False,
+    "raid": 101,
+    "testserver": True
+}
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
@@ -40,6 +51,7 @@ def cli():
 def create_cert(fqdn, pin, applicant, config):
     print('Using config: ', colored('{}'.format(config), 'blue'))
     conf = parse_config(config)
+    check_conf(conf)
     if not 'applicant' in conf:
         if applicant:
             conf['applicant'] = applicant
@@ -89,6 +101,7 @@ def create_cert(fqdn, pin, applicant, config):
 def gen_existing(fqdn, pin, applicant, config, path):
     print('Using config: ', colored('{}'.format(config), 'blue'))
     conf = parse_config(config)
+    check_conf(conf)
     if not 'applicant' in conf:
         if applicant:
             conf['applicant'] = applicant
@@ -113,14 +126,7 @@ def gen_existing(fqdn, pin, applicant, config, path):
 
 @cli.command('generate_config', help='Prints an example config')
 def create_config():
-    print("""{
-    "applicant": "John Doe",
-    "mail": "john.doe@stud.example.com",
-    "unit": "Department of Computer Science",
-    "subject": "/C=DE/ST=Hessen/L=Darmstadt/O=TU/CN={fqdn}",
-    "password": false
-}
-    """)
+    print(json.dumps(CONFIG, sort_keys=True, indent=4))
 
 
 # Helper Methods
@@ -129,6 +135,13 @@ def create_config():
 def parse_config(conf):
     return json.loads(conf.read())
 
+def check_conf(conf):
+    missing = [key for key in CONFIG.keys() if key not in conf.keys()]
+    if len(missing) != 0:
+        cprint('These keys are missing from your config', 'red')
+        cprint(missing, 'yellow')
+        cprint('Aborting', 'red')
+        exit(1)
 
 if __name__ == '__main__':
     cli()
