@@ -116,7 +116,7 @@ def gen_existing(fqdn, pin, applicant, config, path):
     click.confirm('Are these values correct?', default=True, abort=True)
     print('Generating certificate signing request')
     req = openssl.gen_csr_with_existing_cert(path, conf['fqdn'],
-                                             conf['subject'], conf['password'])
+                                             conf['subject'],)
     conf['pin'] = pin
     conf['altnames'] = [fqdn]
     conf['profile'] = 'Web Server'
