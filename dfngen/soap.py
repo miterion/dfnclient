@@ -28,6 +28,6 @@ def submit_request(req, fqdn, altnames, profile, pin, applicant, mail, unit,
         Publish=True,  # publish cert
     )
     pdf = cl.service.getRequestPrintout(
-        RaID=3810, Serial=req_number, Format='application/pdf', Pin=pin_hashed)
+        RaID=raid, Serial=req_number, Format='application/pdf', Pin=pin_hashed)
     with open('{}.pdf'.format(fqdn), 'wb') as f:
         f.write(b64decode(pdf))
