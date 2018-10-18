@@ -13,7 +13,8 @@ CONFIG = {
     "applicant": "John Doe",
     "mail": "john.doe@stud.example.com",
     "unit": "Department of Computer Science",
-    "subject": "/C=DE/ST=Bundesland/L=Stadt/O=Testinstallation Eins CA/CN={fqdn}",
+    "subject":
+    "/C=DE/ST=Bundesland/L=Stadt/O=Testinstallation Eins CA/CN={fqdn}",
     "password": False,
     "raid": 101,
     "testserver": True
@@ -48,7 +49,14 @@ def cli():
     show_default=True,
     default=expanduser('~/.config/dfn-config.json'),
 )
-def create_cert(fqdn, pin, applicant, config):
+@click.option(
+    '--additional',
+    '-a',
+    multiple=True,
+    help=
+    'Altnames for the certificate, provide multiple times for multiple entries',
+)
+def create_cert(fqdn, pin, applicant, config, additional):
     print('Using config: ', colored('{}'.format(config), 'blue'))
     conf = parse_config(config)
     check_conf(conf)
@@ -98,7 +106,14 @@ def create_cert(fqdn, pin, applicant, config):
     show_default=True,
     default=expanduser('~/.config/dfn-config.json'),
 )
-def gen_existing(fqdn, pin, applicant, config, path):
+@click.option(
+    '--additional',
+    '-a',
+    multiple=True,
+    help=
+    'Altnames for the certificate, provide multiple times for multiple entries',
+)
+def gen_existing(fqdn, pin, applicant, config, path, additional):
     print('Using config: ', colored('{}'.format(config), 'blue'))
     conf = parse_config(config)
     check_conf(conf)
@@ -115,8 +130,11 @@ def gen_existing(fqdn, pin, applicant, config, path):
         cprint('{}: {}'.format(key, value), 'yellow')
     click.confirm('Are these values correct?', default=True, abort=True)
     print('Generating certificate signing request')
-    req = openssl.gen_csr_with_existing_cert(path, conf['fqdn'],
-                                             conf['subject'],)
+    req = openssl.gen_csr_with_existing_cert(
+        path,
+        conf['fqdn'],
+        conf['subject'],
+    )
     conf['pin'] = pin
     conf['altnames'] = [fqdn]
     conf['profile'] = 'Web Server'
@@ -135,6 +153,7 @@ def create_config():
 def parse_config(conf):
     return json.loads(conf.read())
 
+
 def check_conf(conf):
     missing = [key for key in CONFIG.keys() if key not in conf.keys()]
     if len(missing) != 0:
@@ -142,6 +161,7 @@ def check_conf(conf):
         cprint(missing, 'yellow')
         cprint('Aborting', 'red')
         exit(1)
+
 
 if __name__ == '__main__':
     cli()
