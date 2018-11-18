@@ -56,7 +56,15 @@ def cli():
     help=
     'Altnames for the certificate, provide multiple times for multiple entries',
 )
-def create_cert(fqdn, pin, applicant, config, additional):
+@click.option(
+    '--only-rq',
+    '-r',
+    'requestnumber',
+    default=False,
+    is_flag=True,
+    help='Only print the request number and do not generate a pdf',
+)
+def create_cert(fqdn, pin, applicant, config, additional, requestnumber):
     print('Using config: ', colored('{}'.format(config), 'blue'))
     conf = parse_config(config)
     check_conf(conf)
@@ -78,8 +86,9 @@ def create_cert(fqdn, pin, applicant, config, additional):
     conf['pin'] = pin
     conf['altnames'] = [fqdn]
     conf['profile'] = 'Web Server'
-    soap.submit_request(req, **conf)
-    print('Generated pdf at:', colored('{}.pdf'.format(fqdn)))
+    soap.submit_request(req, onlyreqnumber=requestnumber, **conf)
+    if not requestnumber:
+        print('Generated pdf at:', colored('{}.pdf'.format(fqdn)))
 
 
 @cli.command('csr', help='Generate a certificate for an existing certificate.')
@@ -113,7 +122,15 @@ def create_cert(fqdn, pin, applicant, config, additional):
     help=
     'Altnames for the certificate, provide multiple times for multiple entries',
 )
-def gen_existing(fqdn, pin, applicant, config, path, additional):
+@click.option(
+    '--only-rq',
+    '-r',
+    'requestnumber',
+    default=False,
+    is_flag=True,
+    help='Only print the request number and do not generate a pdf',
+)
+def gen_existing(fqdn, pin, applicant, config, path, additional, requestnumber):
     print('Using config: ', colored('{}'.format(config), 'blue'))
     conf = parse_config(config)
     check_conf(conf)
@@ -138,8 +155,9 @@ def gen_existing(fqdn, pin, applicant, config, path, additional):
     conf['pin'] = pin
     conf['altnames'] = [fqdn]
     conf['profile'] = 'Web Server'
-    soap.submit_request(req, **conf)
-    print('Generated pdf at:', colored('{}.pdf'.format(fqdn)))
+    soap.submit_request(req, onlyreqnumber=requestnumber, **conf)
+    if not requestnumber:
+        print('Generated pdf at:', colored('{}.pdf'.format(fqdn)))
 
 
 @cli.command('generate_config', help='Prints an example config')

@@ -6,7 +6,7 @@ from base64 import b64decode
 
 
 def submit_request(req, fqdn, altnames, profile, pin, applicant, mail, unit,
-                   raid, testserver, **kwargs):
+                   raid, testserver, onlyreqnumber=False, **kwargs):
     pin_hashed = sha1(str(pin).encode()).hexdigest()
     if testserver:
         cl = Client(
@@ -27,6 +27,9 @@ def submit_request(req, fqdn, altnames, profile, pin, applicant, mail, unit,
         AddOrgUnit=unit,
         Publish=True,  # publish cert
     )
+    print('The request number is: {}'.format(req_number))
+    if onlyreqnumber:
+        return
     pdf = cl.service.getRequestPrintout(
         RaID=raid, Serial=req_number, Format='application/pdf', Pin=pin_hashed)
     with open('{}.pdf'.format(fqdn), 'wb') as f:
