@@ -38,7 +38,6 @@ def cli():
     help='Applicant code pin, will be prompted if not provided')
 @click.option(
     '--applicant',
-    '-a',
     type=str,
     help='Name of the applicant, defaults to value in config')
 @click.option(
@@ -96,7 +95,6 @@ def create_cert(fqdn, pin, applicant, config, additional, requestnumber):
 @click.argument('path', type=click.Path(exists=True))
 @click.option(
     '--applicant',
-    '-a',
     type=str,
     help='Name of the applicant, defaults to value in config')
 @click.option(
