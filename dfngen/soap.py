@@ -5,8 +5,18 @@ from hashlib import sha1
 from base64 import b64decode
 
 
-def submit_request(req, fqdn, altnames, profile, pin, applicant, mail, unit,
-                   raid, testserver, onlyreqnumber=False, **kwargs):
+def submit_request(req,
+                   fqdn,
+                   altnames,
+                   profile,
+                   pin,
+                   applicant,
+                   mail,
+                   unit,
+                   raid,
+                   testserver,
+                   onlyreqnumber=False,
+                   **kwargs):
     pin_hashed = sha1(str(pin).encode()).hexdigest()
     if testserver:
         cl = Client(
@@ -16,6 +26,7 @@ def submit_request(req, fqdn, altnames, profile, pin, applicant, mail, unit,
             'https://pki.pca.dfn.de/dfn-ca-global-g2/cgi-bin/pub/soap?wsdl=1')
     alt_type = cl.factory.create('ArrayOfString')
     alt_type._arrayType = "ns0:string[1]"
+    alt_type.item = list(altnames)
     req_number = cl.service.newRequest(
         RaID=raid,
         PKCS10=req,  # Certificate Signing Request

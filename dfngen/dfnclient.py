@@ -75,15 +75,22 @@ def create_cert(fqdn, pin, applicant, config, additional, requestnumber):
                 'No Applicant provided, please enter')
     conf['fqdn'] = fqdn
     conf['subject'] = conf['subject'].format(**conf)
+    conf['altnames'] = ['DNS:{}'.format(url) for url in additional]
     print('Generating certificate with the following values:\n')
     for key, value in conf.items():
         cprint('{}: {}'.format(key, value), 'yellow')
     click.confirm('Are these values correct?', default=True, abort=True)
     print('Generating certificate')
-    req = openssl.gen_csr_with_new_cert(conf['fqdn'], conf['subject'],
-                                        conf['password'])
+    if additional:
+        req = openssl.gen_csr_with_new_cert(
+            conf['fqdn'],
+            conf['subject'],
+            conf['password'],
+            conf['altnames'])
+    else:
+        req = openssl.gen_csr_with_new_cert(conf['fqdn'], conf['subject'],
+                                            conf['password'])
     conf['pin'] = pin
-    conf['altnames'] = [fqdn]
     conf['profile'] = 'Web Server'
     soap.submit_request(req, onlyreqnumber=requestnumber, **conf)
     if not requestnumber:
@@ -140,6 +147,7 @@ def gen_existing(fqdn, pin, applicant, config, path, additional, requestnumber):
                 'No Applicant provided, please enter')
     conf['fqdn'] = fqdn
     conf['subject'] = conf['subject'].format(**conf)
+    conf['altnames'] = ['DNS:{}'.format(url) for url in additional]
     print('Generating certificate signing request with the following values:\n')
     for key, value in conf.items():
         cprint('{}: {}'.format(key, value), 'yellow')
@@ -151,7 +159,6 @@ def gen_existing(fqdn, pin, applicant, config, path, additional, requestnumber):
         conf['subject'],
     )
     conf['pin'] = pin
-    conf['altnames'] = [fqdn]
     conf['profile'] = 'Web Server'
     soap.submit_request(req, onlyreqnumber=requestnumber, **conf)
     if not requestnumber:

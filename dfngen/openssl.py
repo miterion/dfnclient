@@ -4,11 +4,17 @@ from sys import exit
 from termcolor import cprint
 
 
-def gen_csr_with_new_cert(fqdn, subject, password):
+def gen_csr_with_new_cert(fqdn, subject, password, altnames=None):
     command = [
         'openssl', 'req', '-newkey', 'rsa:4096', '-keyout',
-        '{}.key'.format(fqdn), '-out', '{}.req'.format(fqdn), '-subj', subject
+        '{}.key'.format(fqdn), '-out', '{}.req'.format(fqdn), '-subj',
+        subject
     ]
+    if altnames != None:
+        for domain in altnames:
+            command.append('-addext')
+            command.append('"subjectAltName = {}"'.format(domain))
+        print(command)
     if not password:
         command.append('-nodes')
     try:
@@ -20,7 +26,7 @@ def gen_csr_with_new_cert(fqdn, subject, password):
         return f.read()
 
 
-def gen_csr_with_existing_cert(key_path, fqdn, subject):
+def gen_csr_with_existing_cert(key_path, fqdn, subject, additional=None):
     try:
         run([
             'openssl', 'req', '-new', '-key', key_path, '-out',
