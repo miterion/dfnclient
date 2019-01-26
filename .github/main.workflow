@@ -5,5 +5,5 @@ workflow "New workflow" {
 
 action "Create python wheel" {
   uses = "docker://python:3.7"
-  runs = "python setup.py --help"
+  runs = "python setup.py bdist_wheel"
 }
