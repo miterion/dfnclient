@@ -64,7 +64,7 @@ def cli():
     help='Only print the request number and do not generate a pdf',
 )
 def create_cert(fqdn, pin, applicant, config, additional, requestnumber):
-    print('Using config: ', colored('{}'.format(config), 'blue'))
+    print('Using config: ', colored('{}'.format(config.name), 'blue'))
     conf = parse_config(config)
     check_conf(conf)
     if not 'applicant' in conf:
