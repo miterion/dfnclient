@@ -167,13 +167,13 @@ def gen_existing(fqdn, pin, applicant, config, path, additional, requestnumber):
             serialization.load_pem_private_key(f.read(), None,
                                                default_backend())
         except TypeError:
-            conf['password'] = click.prompt(
+            password = click.prompt(
                 colored('Password needed', 'yellow'), hide_input=True).encode()
         else:
             conf['password'] = None
     print('Generating certificate signing request')
     req = openssl.gen_csr_with_existing_cert(
-        path, conf['fqdn'], conf['subject'], password=conf['password'])
+            path, conf['fqdn'], conf['subject'], password=password, additional=additional)
     conf['pin'] = pin
     conf['profile'] = 'Web Server'
     soap.submit_request(req, onlyreqnumber=requestnumber, **conf)
