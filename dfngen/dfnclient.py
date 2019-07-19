@@ -4,6 +4,8 @@ from sys import exit
 
 import click
 from termcolor import colored, cprint
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
 
 from dfngen import openssl, soap
 
@@ -13,8 +15,13 @@ CONFIG = {
     "applicant": "John Doe",
     "mail": "john.doe@stud.example.com",
     "unit": "Department of Computer Science",
-    "subject":
-    "/C=DE/ST=Bundesland/L=Stadt/O=Testinstallation Eins CA/CN={fqdn}",
+    "subject": {
+        "country": "DE",
+        "state": "Bundesland",
+        "city": "Stadt",
+        "org": "Testinstallation Eins CA",
+        "cn": "{fqdn}",
+    },
     "password": False,
     "raid": 101,
     "testserver": True
@@ -74,19 +81,21 @@ def create_cert(fqdn, pin, applicant, config, additional, requestnumber):
             conf['applicant'] = click.prompt(
                 'No Applicant provided, please enter')
     conf['fqdn'] = fqdn
-    conf['subject'] = conf['subject'].format(**conf)
+    conf['subject']['cn'] = conf['subject']['cn'].format(**conf)
     conf['altnames'] = ['DNS:{}'.format(url) for url in additional]
+    if conf['password']:
+        conf['password'] = click.prompt(
+            colored('Enter a password', 'yellow'),
+            hide_input=True,
+            confirmation_prompt=True)
     print('Generating certificate with the following values:\n')
     for key, value in conf.items():
         cprint('{}: {}'.format(key, value), 'yellow')
     click.confirm('Are these values correct?', default=True, abort=True)
     print('Generating certificate')
     if additional:
-        req = openssl.gen_csr_with_new_cert(
-            conf['fqdn'],
-            conf['subject'],
-            conf['password'],
-            conf['altnames'])
+        req = openssl.gen_csr_with_new_cert(conf['fqdn'], conf['subject'],
+                                            conf['password'], conf['altnames'])
     else:
         req = openssl.gen_csr_with_new_cert(conf['fqdn'], conf['subject'],
                                             conf['password'])
@@ -146,18 +155,25 @@ def gen_existing(fqdn, pin, applicant, config, path, additional, requestnumber):
             conf['applicant'] = click.prompt(
                 'No Applicant provided, please enter')
     conf['fqdn'] = fqdn
-    conf['subject'] = conf['subject'].format(**conf)
+    conf['subject']['cn'] = conf['subject']['cn'].format(**conf)
     conf['altnames'] = ['DNS:{}'.format(url) for url in additional]
     print('Generating certificate signing request with the following values:\n')
     for key, value in conf.items():
         cprint('{}: {}'.format(key, value), 'yellow')
     click.confirm('Are these values correct?', default=True, abort=True)
+    print('Checking key')
+    with open(path, 'rb') as f:
+        try:
+            serialization.load_pem_private_key(f.read(), None,
+                                               default_backend())
+        except TypeError:
+            conf['password'] = click.prompt(
+                colored('Password needed', 'yellow'), hide_input=True).encode()
+        else:
+            conf['password'] = None
     print('Generating certificate signing request')
     req = openssl.gen_csr_with_existing_cert(
-        path,
-        conf['fqdn'],
-        conf['subject'],
-    )
+        path, conf['fqdn'], conf['subject'], password=conf['password'])
     conf['pin'] = pin
     conf['profile'] = 'Web Server'
     soap.submit_request(req, onlyreqnumber=requestnumber, **conf)
