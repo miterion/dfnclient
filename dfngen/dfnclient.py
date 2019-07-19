@@ -82,7 +82,7 @@ def create_cert(fqdn, pin, applicant, config, additional, requestnumber):
                 'No Applicant provided, please enter')
     conf['fqdn'] = fqdn
     conf['subject']['cn'] = conf['subject']['cn'].format(**conf)
-    conf['altnames'] = ['DNS:{}'.format(url) for url in additional]
+    conf['altnames'] = additional
     if conf['password']:
         conf['password'] = click.prompt(
             colored('Enter a password', 'yellow'),
@@ -156,7 +156,7 @@ def gen_existing(fqdn, pin, applicant, config, path, additional, requestnumber):
                 'No Applicant provided, please enter')
     conf['fqdn'] = fqdn
     conf['subject']['cn'] = conf['subject']['cn'].format(**conf)
-    conf['altnames'] = ['DNS:{}'.format(url) for url in additional]
+    conf['altnames'] = additional
     print('Generating certificate signing request with the following values:\n')
     for key, value in conf.items():
         cprint('{}: {}'.format(key, value), 'yellow')

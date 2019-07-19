@@ -26,7 +26,7 @@ def submit_request(req,
             'https://pki.pca.dfn.de/dfn-ca-global-g2/cgi-bin/pub/soap?wsdl=1')
     alt_type = cl.factory.create('ArrayOfString')
     alt_type._arrayType = "ns0:string[1]"
-    alt_type.item = list(altnames)
+    alt_type.item = ['DNS:{}'.format(url) for url in altnames]
     req_number = cl.service.newRequest(
         RaID=raid,
         PKCS10=req,  # Certificate Signing Request
