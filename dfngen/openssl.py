@@ -11,7 +11,7 @@ from termcolor import cprint
 
 def gen_csr_with_new_cert(fqdn, subject, password, altnames=None):
     key = rsa.generate_private_key(
-        public_exponent=65537, key_size=2048, backend=default_backend())
+        public_exponent=65537, key_size=4096, backend=default_backend())
     with open('{}.key'.format(fqdn), 'wb') as f:
         if password:
             f.write(
