@@ -173,7 +173,7 @@ def gen_existing(fqdn, pin, applicant, config, path, additional, requestnumber):
             conf['password'] = None
     print('Generating certificate signing request')
     req = openssl.gen_csr_with_existing_cert(
-            path, conf['fqdn'], conf['subject'], password=password, additional=additional)
+            path, conf['fqdn'], conf['subject'], password=conf['password'], additional=additional)
     conf['pin'] = pin
     conf['profile'] = 'Web Server'
     soap.submit_request(req, onlyreqnumber=requestnumber, **conf)
