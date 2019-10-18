@@ -23,7 +23,7 @@ CONFIG = {
         "org": "Testinstallation Eins CA",
         "cn": "{fqdn}",
     },
-    "password": False,
+    "use_password": False,
     "raid": 101,
     "testserver": True,
 }
@@ -35,20 +35,18 @@ def cli():
 
 
 @cli.command("create", help="Create a new certificate and signing request")
-@click.argument("fqdn")
+@click.argument("fqdn", required=False)
 @click.option(
     "--pin",
     "-p",
-    prompt=True,
     hide_input=True,
     confirmation_prompt=True,
     type=str,
     help="Applicant code pin, will be prompted if not provided",
 )
 @click.option(
-    "--applicant",
-    type=str,
-    help="Name of the applicant, defaults to value in config")
+    "--applicant", type=str, help="Name of the applicant, defaults to value in config"
+)
 @click.option(
     "-c",
     "--config",
@@ -61,8 +59,7 @@ def cli():
     "--additional",
     "-a",
     multiple=True,
-    help=
-    "Altnames for the certificate, provide multiple times for multiple entries",
+    help="Altnames for the certificate, provide multiple times for multiple entries",
 )
 @click.option(
     "--only-rq",
@@ -75,19 +72,24 @@ def cli():
 def create_cert(fqdn, pin, applicant, config, additional, requestnumber):
     conf = parse_config(config)
     check_conf(conf)
+    if not "fqdn" in conf and fqdn is None:
+        fqdn = click.prompt("Primary FQDN", type=str)
+    if not "pin" in conf:
+        pin = click.prompt(
+            "PIN for DFN request", hide_input=True, confirmation_prompt=True, type=int
+        )
     print("Using config: ", colored("{}".format(config), "blue"))
     if not "applicant" in conf:
         if applicant:
             conf["applicant"] = applicant
         else:
-            conf["applicant"] = click.prompt(
-                "No Applicant provided, please enter")
+            conf["applicant"] = click.prompt("No Applicant provided, please enter")
     conf["fqdn"] = fqdn
     conf["subject"]["cn"] = conf["subject"]["cn"].format(**conf)
     conf["altnames"] = additional
-    if conf["password"]:
+    if conf["use_password"]:
         conf["password"] = click.prompt(
-            colored("Enter a password", "yellow"),
+            colored("Enter a certificate password", "yellow"),
             hide_input=True,
             confirmation_prompt=True,
         )
@@ -97,25 +99,28 @@ def create_cert(fqdn, pin, applicant, config, additional, requestnumber):
     click.confirm("Are these values correct?", default=True, abort=True)
     print("Generating certificate")
     if additional:
-        req = openssl.gen_csr_with_new_cert(conf["fqdn"], conf["subject"],
-                                            conf["password"], conf["altnames"])
+        req = openssl.gen_csr_with_new_cert(
+            conf["fqdn"], conf["subject"], conf["password"], conf["altnames"]
+        )
     else:
-        req = openssl.gen_csr_with_new_cert(conf["fqdn"], conf["subject"],
-                                            conf["password"])
+        req = openssl.gen_csr_with_new_cert(
+            conf["fqdn"], conf["subject"], conf["password"]
+        )
     conf["pin"] = pin
     conf["profile"] = "Web Server"
     soap.submit_request(req, onlyreqnumber=requestnumber, **conf)
     if not requestnumber:
         print("Generated pdf at:", colored("{}.pdf".format(fqdn)))
+    with open("{}.conf".format(fqdn), "w") as f:
+        f.write(json.dumps(conf, sort_keys=True, indent=4))
 
 
 @cli.command("csr", help="Generate a certificate for an existing certificate.")
 @click.argument("fqdn")
 @click.argument("path", type=click.Path(exists=True))
 @click.option(
-    "--applicant",
-    type=str,
-    help="Name of the applicant, defaults to value in config")
+    "--applicant", type=str, help="Name of the applicant, defaults to value in config"
+)
 @click.option(
     "--pin",
     "-p",
@@ -137,8 +142,7 @@ def create_cert(fqdn, pin, applicant, config, additional, requestnumber):
     "--additional",
     "-a",
     multiple=True,
-    help=
-    "Altnames for the certificate, provide multiple times for multiple entries",
+    help="Altnames for the certificate, provide multiple times for multiple entries",
 )
 @click.option(
     "--only-rq",
@@ -156,8 +160,7 @@ def gen_existing(fqdn, pin, applicant, config, path, additional, requestnumber):
         if applicant:
             conf["applicant"] = applicant
         else:
-            conf["applicant"] = click.prompt(
-                "No Applicant provided, please enter")
+            conf["applicant"] = click.prompt("No Applicant provided, please enter")
     conf["fqdn"] = fqdn
     conf["subject"]["cn"] = conf["subject"]["cn"].format(**conf)
     conf["altnames"] = additional
@@ -168,11 +171,11 @@ def gen_existing(fqdn, pin, applicant, config, path, additional, requestnumber):
     print("Checking key")
     with open(path, "rb") as f:
         try:
-            serialization.load_pem_private_key(f.read(), None,
-                                               default_backend())
+            serialization.load_pem_private_key(f.read(), None, default_backend())
         except TypeError:
             password = click.prompt(
-                colored("Password needed", "yellow"), hide_input=True).encode()
+                colored("Password needed", "yellow"), hide_input=True
+            ).encode()
         else:
             conf["password"] = None
     print("Generating certificate signing request")
