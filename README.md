@@ -1,6 +1,6 @@
 # DFNClient
-![PyPI](https://img.shields.io/pypi/v/dfnclient?color=green&style=for-the-badge)
-![Travis (.org)](https://img.shields.io/travis/miterion/dfnclient?style=for-the-badge)
+![PyPI](https://img.shields.io/pypi/v/dfnclient?color=green&style=for-the-badge&link=https://pypi.org/project/dfnclient/)
+![Travis (.org)](https://img.shields.io/travis/miterion/dfnclient?style=for-the-badge&link=https://travis-ci.org/github/miterion/dfnclient/)
 
 A small python script to request certificates from the dfn
 
