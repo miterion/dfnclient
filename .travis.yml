@@ -1,7 +1,12 @@
 language: python
 python: "3.7"
 
-script: python setup.py bdist_wheel
+install:
+  - pip install yapf
+
+script: 
+  - yapf -qrp dfngen
+  - python setup.py bdist_wheel
 
 deploy:
   - provider: releases

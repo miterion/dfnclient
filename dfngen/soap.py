@@ -41,7 +41,9 @@ def submit_request(req,
     print('The request number is: {}'.format(req_number))
     if onlyreqnumber:
         return
-    pdf = cl.service.getRequestPrintout(
-        RaID=raid, Serial=req_number, Format='application/pdf', Pin=pin_hashed)
+    pdf = cl.service.getRequestPrintout(RaID=raid,
+                                        Serial=req_number,
+                                        Format='application/pdf',
+                                        Pin=pin_hashed)
     with open('{}.pdf'.format(fqdn), 'wb') as f:
         f.write(b64decode(pdf))
