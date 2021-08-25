@@ -1,0 +1,28 @@
+name: Lint and publish
+
+on:
+  push:
+    tags: v*
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  yapf:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Install yapf and run it
+        run: |
+          pip install yapf
+          yapf -qrp dfngen
+
+      - name: Build bdist
+        run: python setup.py bdist_wheel
+        
+      - name: Publish to pypi
+        uses: pypa/gh-action-pypi-publish@v1.4.2
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
