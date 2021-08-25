@@ -26,3 +26,9 @@ jobs:
         uses: pypa/gh-action-pypi-publish@v1.4.2
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+          skip_existing: true
+          
+      - name: Publish to Github Releases
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*.whl
