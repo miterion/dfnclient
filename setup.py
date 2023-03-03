@@ -8,7 +8,7 @@ setup(
         version='0.4.9',
         license='MIT',
         description='Certificate client based on the soap API of the dfn',
-        install_requires =['click==8.1.3', 'termcolor==2.2.0', 'suds-py3==1.4.5.0', 'cryptography==39.0.1'],
+        install_requires =['click==8.1.3', 'termcolor==2.2.0', 'suds-py3==1.4.5.0', 'cryptography==39.0.2'],
         packages=find_packages(),
         long_description=long_description,
         long_description_content_type="text/markdown",
